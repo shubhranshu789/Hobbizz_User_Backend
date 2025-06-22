@@ -50,4 +50,66 @@ router.get('/clubnewsviewallpost', async (req, res) => {
 });
 
 
+
+
+
+
+
+
+
+// Post Api For Hall Of Fame
+const HALLOFFAME = mongoose.model("HALLOFFAME");
+
+// POST new HallOfFame entry
+router.post('/halloffame', async (req, res) => {
+  try {
+    const { title, category, origin, imageUrl, description, period, tags } = req.body;
+
+    // Create new document
+    const newEntry = new HALLOFFAME({
+      title,
+      category,
+      origin,
+      imageUrl,
+      description,
+      period,
+      tags,
+    });
+
+    const saved = await newEntry.save();
+    return res.status(201).json({
+      success: true,
+      message: 'Hall of Fame entry created successfully!',
+      data: saved,
+    });
+  } catch (error) {
+    console.error('Error creating Hall of Fame entry:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message,
+    });
+  }
+});
+
+
+// Get Api of Hall Of Fame
+router.get('/halloffamegetallpost', async (req, res) => {
+  try {
+    const hallOfFame = await HALLOFFAME.find().sort({ publishedAt: -1 }); // Latest first
+    res.status(200).json({
+      success: true,
+      count: hallOfFame.length,
+      data: hallOfFame
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch news',
+      error: error.message
+    }); 
+  }
+});
+
+
 module.exports = router;

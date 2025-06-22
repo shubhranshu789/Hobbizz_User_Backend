@@ -9,6 +9,7 @@ app.use(cors())
 // All Models Database
 require('./model/user')
 require('./model/artClub/clubNews')
+require('./model/artClub/hallOfFame')
 require('./model/danceClub/danceClubNews')
 
 
