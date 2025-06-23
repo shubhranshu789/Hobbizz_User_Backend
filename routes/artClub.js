@@ -9,7 +9,9 @@ const {Jwt_secret} = require("../keys");
 
 const CLUBNEWS = mongoose.model("CLUBNEWS");
 
-// POST /api/news — Create news
+
+// -> CLUB NEWS - ART CLUB 
+// POST: API FOR CLUB NEWS
 router.post('/clubnews', async (req, res) => {
   try {
     const newsData = req.body;
@@ -31,7 +33,7 @@ router.post('/clubnews', async (req, res) => {
   }
 });
 
-
+// GET: API FOR CLUB NEWS
 router.get('/clubnewsviewallpost', async (req, res) => {
   try {
     const allNews = await CLUBNEWS.find().sort({ publishedAt: -1 }); // Latest first
@@ -51,16 +53,10 @@ router.get('/clubnewsviewallpost', async (req, res) => {
 
 
 
-
-
-
-
-
-
-// Post Api For Hall Of Fame
+// -> HALL OF FAME
+// POST: API FOR HALLOFFAME
 const HALLOFFAME = mongoose.model("HALLOFFAME");
 
-// POST new HallOfFame entry
 router.post('/halloffame', async (req, res) => {
   try {
     const { title, category, origin, imageUrl, description, period, tags } = req.body;
@@ -93,7 +89,7 @@ router.post('/halloffame', async (req, res) => {
 });
 
 
-// Get Api of Hall Of Fame
+// GET: API FOR HALL OF FAME
 router.get('/halloffamegetallpost', async (req, res) => {
   try {
     const hallOfFame = await HALLOFFAME.find().sort({ publishedAt: -1 }); // Latest first
@@ -108,6 +104,39 @@ router.get('/halloffamegetallpost', async (req, res) => {
       message: 'Failed to fetch news',
       error: error.message
     }); 
+  }
+});
+
+
+
+// -> IMAGE GALLERY
+// POST: API FOR IMAGE GALLERY
+
+const GALLERY = mongoose.model("GALLERY");
+
+router.post('/gallerypost', async (req, res) => {
+  try {
+    const { title, imageUrl } = req.body;
+    if (!title || !imageUrl) {
+      return res.status(400).json({ error: "Title and imageUrl are required!" });
+    }
+
+    const newImage = new GALLERY({ title, imageUrl });
+    await newImage.save();
+
+    res.status(201).json({ message: "Image added successfully!", data: newImage });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//  GET: API FOR IMAGE GALLERY
+router.get('/viewgallerypost', async (req, res) => {
+  try {
+    const images = await  GALLERY.find().sort({ createdAt: -1 }); // latest first
+    res.status(200).json(images);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

@@ -10,6 +10,7 @@ app.use(cors())
 require('./model/user')
 require('./model/artClub/clubNews')
 require('./model/artClub/hallOfFame')
+require('./model/artClub/gallery')
 require('./model/danceClub/danceClubNews')
 
 
