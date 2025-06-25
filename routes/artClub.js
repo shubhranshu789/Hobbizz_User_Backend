@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken")
 const {Jwt_secret} = require("../keys");
 
 const CLUBNEWS = mongoose.model("CLUBNEWS");
+const LEGACY = mongoose.model("LEGACY");
 
 
 // -> CLUB NEWS - ART CLUB 
@@ -52,6 +53,53 @@ router.get('/clubnewsviewallpost', async (req, res) => {
 });
 
 
+
+// -> LEGACY 
+// POST: API FOR LEGACY
+router.post('/legacy', async (req, res) => {
+  try {
+    const { name, years, image, biography, contributions, influence } = req.body;
+    const newLegend = new LEGACY({
+      name,
+      years,
+      image,
+      biography,
+      contributions,
+      influence
+    });
+    const saved = await newLegend.save();
+    return res.status(201).json({
+      success: true,
+      message: 'Legend entry created successfully!',
+      data: saved,
+    });
+  } catch (error) {
+    console.error('Error creating legend entry:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message,
+    });
+  }
+});
+
+// GET: API FOR LEGACY
+router.get('/legacygetall', async (req, res) => {
+  try {
+    const legends = await LEGACY.find().sort({ name: 1 }); // Alphabetical order
+    res.status(200).json({
+      success: true,
+      count: legends.length,
+      data: legends
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch legends',
+      error: error.message
+    }); 
+  }
+});
 
 // -> HALL OF FAME
 // POST: API FOR HALLOFFAME
