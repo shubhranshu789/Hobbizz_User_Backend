@@ -4,6 +4,8 @@ const cors = require('cors');
 
 const port = 5000;
 const app = express();
+// Serve uploads
+app.use('/uploads', express.static('uploads'));
 
 app.use(cors())
 // All Models Database
@@ -13,6 +15,7 @@ require('./model/artClub/hallOfFame')
 require('./model/artClub/gallery')
 require('./model/artClub/legacy')
 require('./model/danceClub/danceClubNews')
+require('./model/artClub/contest')
 
 
 // All APIs

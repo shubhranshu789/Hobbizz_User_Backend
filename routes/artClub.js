@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router()
+const multer = require("multer");
+const path = require("path");
 
 const bcryptjs = require('bcryptjs');
 const jwt = require("jsonwebtoken")
@@ -185,6 +187,46 @@ router.get('/viewgallerypost', async (req, res) => {
     res.status(200).json(images);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+// -> CLUB CONTEST
+
+const upload = require('../middleWares/upload');
+const CONTEST = require('../model/artClub/contest');
+
+router.post('/contest', upload.single('file'), async (req, res) => {
+  try {
+    const { contest, title, description } = req.body;
+    const file = req.file;
+
+    if (!contest || !title || !description || !file) {
+      return res.status(400).json({ success: false, message: 'All fields including file are required.' });
+    }
+
+    const newSubmission = new CONTEST({
+      contest,
+      title,
+      description,
+      imageUrl: `/middleWares/upload/${file.filename}`,
+      fileType: file.mimetype,
+      fileSizeKB: Math.ceil(file.size / 1024)
+    });
+
+    await newSubmission.save();
+    res.status(201).json({ success: true, message: 'Submission successful!', data: newSubmission });
+  } catch (error) {
+    console.error('POST /contest error:', error);
+    res.status(500).json({ success: false, message: 'Server error while submitting entry.' });
+  }
+});
+
+router.get('/contest', async (req, res) => {
+  try {
+    const entries = await CONTEST.find().sort({ submittedAt: -1 });
+    res.status(200).json({ success: true, data: entries });
+  } catch (error) {
+    console.error('GET /contest error:', error);
+    res.status(500).json({ success: false, message: 'Server error while fetching entries.' });
   }
 });
 
